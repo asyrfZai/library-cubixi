@@ -128,7 +128,7 @@ form.addEventListener("submit", async (e) => {
     form.reset();
     endDateInput.value = "";
   } catch (err) {
-    showMessage("Something went wrong. Please try again.", "error");
+    showMessage(err.message || "Something went wrong. Please try again.", "error");
   } finally {
     setSubmitting(false);
   }
