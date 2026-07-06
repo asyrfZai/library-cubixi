@@ -1,16 +1,16 @@
 # Library Book Loan Request Form
 
-A static form that lets a member request to borrow a book. The book list is
-pulled live from a Google Sheet, and every submission is written to a
+A simple static form that lets a member request to borrow a book. The book list is
+pulled live from a Google Sheet and every submission is written to a
 separate "feedback" Google Sheet — all via a single Google Apps Script Web App
 (no backend server needed).
 
 ## Files
 
-- `index.html` / `style.css` — the form UI (theme: `#798f69` green + black)
+- `index.html` / `style.css` — the form UI (theme: choose your own style laaa)
 - `script.js` — loads the book dropdown, auto-computes the end date (+1 month), submits the form
 - `config.js` — put your deployed Apps Script Web App URL here
-- `apps-script/Code.gs` — the Google Apps Script backend to deploy
+- `apps-script/Code.gs` — the Google Apps Script backend to deploy (your own laaa)
 
 ## 1. Create the two Google Sheets
 
@@ -18,8 +18,8 @@ separate "feedback" Google Sheet — all via a single Google Apps Script Web App
 | A (ID) | B (Name)          |
 |--------|-------------------|
 | ID     | Name              |
-| B001   | The Hobbit        |
-| B002   | Clean Code        |
+|    1   | The Acap Bio      |
+|    2   | Money is Lust     |
 
 Row 1 must be a header row (it's skipped automatically). Any sheet/tab name is fine — just set `BOOKS_SHEET_NAME` in `Code.gs` to match (default: `Books`).
 
@@ -35,13 +35,7 @@ Copy each spreadsheet's ID from its URL:
 ## 2. Deploy the Apps Script
 
 1. Go to [script.google.com](https://script.google.com) → **New project**.
-2. Delete the default code and paste in the contents of `apps-script/Code.gs`.
-3. Replace `BOOKS_SHEET_ID` and `FEEDBACK_SHEET_ID` with the IDs from step 1.
-4. Click **Deploy → New deployment**.
-   - Type: **Web app**
-   - Execute as: **Me**
-   - Who has access: **Anyone** (required so the static form can call it)
-5. Click **Deploy**, authorize the script when prompted, and copy the **Web app URL** (ends in `/exec`).
+2. Configure and Deploy it.
 
 ## 3. Wire up the form
 
@@ -55,9 +49,6 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/XXXXXXXX/exec";
 
 Just open `index.html` in a browser, or serve the folder with any static file server, e.g.:
 
-```bash
-npx serve .
-```
 
 ## Notes
 
