@@ -1,9 +1,14 @@
 const form = document.getElementById("loanForm");
-const bookSelect = document.getElementById("book");
+const bookSearchInput = document.getElementById("bookSearch");
+const bookHiddenInput = document.getElementById("book");
+const bookOptionsList = document.getElementById("bookOptions");
 const startDateInput = document.getElementById("startDate");
 const endDateInput = document.getElementById("endDate");
 const submitBtn = document.getElementById("submitBtn");
 const formMessage = document.getElementById("formMessage");
+
+let allBooks = [];
+let activeIndex = -1;
 
 function setFieldError(fieldName, message) {
   const el = document.querySelector(`.error[data-for="${fieldName}"]`);
@@ -40,39 +45,120 @@ function addOneMonth(dateStr) {
   return toISODate(date);
 }
 
+function selectBook(book) {
+  bookHiddenInput.value = book.id;
+  bookHiddenInput.dataset.name = book.name;
+  bookSearchInput.value = book.name;
+  closeOptions();
+  setFieldError("book", "");
+}
+
+function clearBookSelection() {
+  bookHiddenInput.value = "";
+  bookHiddenInput.dataset.name = "";
+}
+
+function renderOptions(filterText) {
+  const query = filterText.trim().toLowerCase();
+  const matches = query
+    ? allBooks.filter((book) => book.name.toLowerCase().includes(query))
+    : allBooks;
+
+  bookOptionsList.innerHTML = "";
+  activeIndex = -1;
+
+  if (matches.length === 0) {
+    const li = document.createElement("li");
+    li.className = "empty";
+    li.textContent = "No books found";
+    bookOptionsList.appendChild(li);
+  } else {
+    matches.forEach((book) => {
+      const li = document.createElement("li");
+      li.textContent = book.name;
+      li.setAttribute("role", "option");
+      li.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        selectBook(book);
+      });
+      bookOptionsList.appendChild(li);
+    });
+  }
+
+  openOptions();
+}
+
+function openOptions() {
+  bookOptionsList.hidden = false;
+  bookSearchInput.setAttribute("aria-expanded", "true");
+}
+
+function closeOptions() {
+  bookOptionsList.hidden = true;
+  bookSearchInput.setAttribute("aria-expanded", "false");
+  activeIndex = -1;
+}
+
+function highlightOption(index) {
+  const items = Array.from(bookOptionsList.querySelectorAll("li:not(.empty)"));
+  items.forEach((item, i) => item.classList.toggle("active", i === index));
+  if (items[index]) items[index].scrollIntoView({ block: "nearest" });
+}
+
 async function loadBooks() {
   try {
     const res = await fetch(`${APPS_SCRIPT_URL}?action=list`);
     if (!res.ok) throw new Error("Network response was not ok");
     const data = await res.json();
-    const books = data.books || [];
+    allBooks = data.books || [];
 
-    bookSelect.innerHTML = "";
-
-    if (books.length === 0) {
-      bookSelect.innerHTML = '<option value="" disabled selected>No books available</option>';
+    if (allBooks.length === 0) {
+      bookSearchInput.placeholder = "No books available";
       return;
     }
 
-    const placeholder = document.createElement("option");
-    placeholder.value = "";
-    placeholder.textContent = "Select a book";
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    bookSelect.appendChild(placeholder);
-
-    books.forEach((book) => {
-      const option = document.createElement("option");
-      option.value = book.id;
-      option.textContent = book.name;
-      option.dataset.name = book.name;
-      bookSelect.appendChild(option);
-    });
+    bookSearchInput.placeholder = "Search for a book...";
+    bookSearchInput.disabled = false;
   } catch (err) {
-    bookSelect.innerHTML = '<option value="" disabled selected>Failed to load books</option>';
+    bookSearchInput.placeholder = "Failed to load books";
     showMessage("Could not load the book list. Please refresh and try again.", "error");
   }
 }
+
+bookSearchInput.addEventListener("input", () => {
+  clearBookSelection();
+  renderOptions(bookSearchInput.value);
+});
+
+bookSearchInput.addEventListener("focus", () => {
+  renderOptions(bookSearchInput.value);
+});
+
+bookSearchInput.addEventListener("blur", () => {
+  closeOptions();
+});
+
+bookSearchInput.addEventListener("keydown", (e) => {
+  const items = Array.from(bookOptionsList.querySelectorAll("li:not(.empty)"));
+  if (bookOptionsList.hidden || items.length === 0) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    activeIndex = (activeIndex + 1) % items.length;
+    highlightOption(activeIndex);
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    activeIndex = (activeIndex - 1 + items.length) % items.length;
+    highlightOption(activeIndex);
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    if (activeIndex >= 0 && items[activeIndex]) {
+      items[activeIndex].dispatchEvent(new Event("mousedown"));
+    }
+  } else if (e.key === "Escape") {
+    closeOptions();
+  }
+});
 
 startDateInput.addEventListener("change", () => {
   if (startDateInput.value) {
@@ -88,8 +174,8 @@ form.addEventListener("submit", async (e) => {
   showMessage("", "");
 
   const name = document.getElementById("name").value.trim();
-  const bookId = bookSelect.value;
-  const bookName = bookSelect.selectedOptions[0]?.dataset.name || "";
+  const bookId = bookHiddenInput.value;
+  const bookName = bookHiddenInput.dataset.name || "";
   const startDate = startDateInput.value;
   const endDate = endDateInput.value;
 
@@ -127,6 +213,7 @@ form.addEventListener("submit", async (e) => {
     showMessage("Request submitted successfully!", "success");
     form.reset();
     endDateInput.value = "";
+    clearBookSelection();
   } catch (err) {
     showMessage(err.message || "Something went wrong. Please try again.", "error");
   } finally {

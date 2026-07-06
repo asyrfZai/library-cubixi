@@ -26,10 +26,21 @@
         </div>
 
         <div class="field">
-          <label for="book">Book Title</label>
-          <select id="book" name="book" required>
-            <option value="" disabled selected>Loading books...</option>
-          </select>
+          <label for="bookSearch">Book Title</label>
+          <div class="combobox" id="bookCombobox">
+            <input
+              type="text"
+              id="bookSearch"
+              placeholder="Loading books..."
+              autocomplete="off"
+              role="combobox"
+              aria-expanded="false"
+              aria-controls="bookOptions"
+              disabled
+            />
+            <input type="hidden" id="book" name="book" required />
+            <ul id="bookOptions" class="combobox-list" role="listbox" hidden></ul>
+          </div>
           <span class="error" data-for="book"></span>
         </div>
 

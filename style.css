@@ -136,6 +136,55 @@ input[readonly] {
   color: var(--gray);
 }
 
+.combobox {
+  position: relative;
+}
+
+.combobox input[type="text"]:disabled {
+  background: var(--accent-light);
+  cursor: not-allowed;
+}
+
+.combobox-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.25);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.combobox-list li {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--black);
+  cursor: pointer;
+}
+
+.combobox-list li:hover,
+.combobox-list li.active {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+}
+
+.combobox-list li.empty {
+  color: var(--gray);
+  cursor: default;
+}
+
+.combobox-list li.empty:hover {
+  background: none;
+}
+
 .error {
   font-size: 11.5px;
   color: #c0392b;
