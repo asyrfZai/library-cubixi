@@ -1,0 +1,8 @@
+# AI / Claude tooling artifacts
+.claude/
+CLAUDE.md
+.cursor/
+.cursorrules
+.windsurfrules
+.aider*
+.copilot/

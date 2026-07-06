@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Library Book Loan Request</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <div class="card-header">
+        <div class="badge">📚</div>
+        <h1>Book Loan Request</h1>
+        <p>Borrow a book from the library collection</p>
+      </div>
+
+      <form id="loanForm" class="form" novalidate>
+        <div class="field">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="e.g. John Doe" required />
+          <span class="error" data-for="name"></span>
+        </div>
+
+        <div class="field">
+          <label for="book">Book Title</label>
+          <select id="book" name="book" required>
+            <option value="" disabled selected>Loading books...</option>
+          </select>
+          <span class="error" data-for="book"></span>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" name="startDate" required />
+            <span class="error" data-for="startDate"></span>
+          </div>
+
+          <div class="field">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" name="endDate" readonly />
+            <span class="hint">Auto-set to 1 month after start date</span>
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="submit-btn">
+          <span class="btn-text">Submit Request</span>
+          <span class="btn-spinner" hidden></span>
+        </button>
+
+        <div id="formMessage" class="form-message" role="status"></div>
+      </form>
+    </div>
+  </div>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
